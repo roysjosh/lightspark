@@ -2401,6 +2401,16 @@ ASFUNCTIONBODY(Shape,_getGraphics)
 	return th->graphics.getPtr();
 }
 
+bool MorphShape::boundsRect(number_t& xmin, number_t& xmax, number_t& ymin, number_t& ymax) const
+{
+	const DefineMorphShapeTag* tag=static_cast<const DefineMorphShapeTag*>(this);
+	xmin = imin(xmin,tag->StartBounds.Xmin);
+	xmax = imax(xmax,tag->StartBounds.Xmax);
+	ymin = imin(ymin,tag->StartBounds.Ymin);
+	ymax = imax(ymax,tag->StartBounds.Ymax);
+	return true;
+}
+
 void MorphShape::sinit(Class_base* c)
 {
 	c->setConstructor(Class<IFunction>::getFunction(_constructor));

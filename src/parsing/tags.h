@@ -169,6 +169,7 @@ public:
 
 class DefineMorphShapeTag: public DictionaryTag, public MorphShape
 {
+	friend class MorphShape;
 private:
 	UI16_SWF CharacterId;
 	RECT StartBounds;
