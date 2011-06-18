@@ -1956,6 +1956,10 @@ bool ABCVm::isTypelate(ASObject* type, ASObject* obj)
 	LOG(LOG_CALLS,_("isTypelate"));
 	bool real_ret=false;
 
+	/* HACK: for built-in classes we don't support yet */
+	if(type->getObjectType()==T_UNDEFINED)
+		return false;
+
 	Class_base* objc=NULL;
 	Class_base* c=NULL;
 	assert_and_throw(type->getObjectType()==T_CLASS);
