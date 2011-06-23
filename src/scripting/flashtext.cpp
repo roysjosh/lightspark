@@ -61,6 +61,7 @@ void TextField::sinit(Class_base* c)
 	c->setDeclaredMethodByQName("height","",Class<IFunction>::getFunction(TextField::_setHeight),SETTER_METHOD,true);
 	c->setDeclaredMethodByQName("text","",Class<IFunction>::getFunction(TextField::_getText),GETTER_METHOD,true);
 	c->setDeclaredMethodByQName("text","",Class<IFunction>::getFunction(TextField::_setText),SETTER_METHOD,true);
+	c->setDeclaredMethodByQName("textWidth","",Class<IFunction>::getFunction(TextField::_getTextWidth),GETTER_METHOD,true);
 	c->setDeclaredMethodByQName("appendText","",Class<IFunction>::getFunction(TextField:: appendText),NORMAL_METHOD,true);
 }
 
@@ -128,6 +129,13 @@ ASFUNCTIONBODY(TextField,_setText)
 	assert_and_throw(argslen==1);
 	th->updateText(args[0]->toString());
 	return NULL;
+}
+
+ASFUNCTIONBODY(TextField,_getTextWidth)
+{
+//	TextField* th=Class<TextField>::cast(obj);
+	LOG(LOG_NOT_IMPLEMENTED, "TextField::textWidth");
+	return abstract_i(0);
 }
 
 ASFUNCTIONBODY(TextField, appendText)

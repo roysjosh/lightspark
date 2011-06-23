@@ -56,6 +56,7 @@ public:
 	ASFUNCTION(_setHeight);
 	ASFUNCTION(_getText);
 	ASFUNCTION(_setText);
+	ASFUNCTION(_getTextWidth);
 };
 
 class TextFormat: public ASObject, public TextFormat_data
