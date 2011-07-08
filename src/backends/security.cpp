@@ -106,7 +106,12 @@ URLPolicyFile* SecurityManager::addURLPolicyFile(const URLInfo& url)
 	sem_wait(&mutex);
 	//-- Lock acquired
 	
-	URLPolicyFile* file = new URLPolicyFile(url);
+	URLPolicyFile* file;
+	if (url.getProtocol() == "rtmp" || url.getProtocol() == "rtmpt")
+		file = new URLPolicyFile(url.goToURL(tiny_string("http") +
+			(url.getParsedURL().raw_buf() + strlen(url.getProtocol().raw_buf()))));
+	else
+		file = new URLPolicyFile(url);
 	if(file->isValid())
 	{
 		LOG(LOG_NO_INFO, 
