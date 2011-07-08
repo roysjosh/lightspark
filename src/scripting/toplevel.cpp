@@ -1290,6 +1290,7 @@ void XMLList::sinit(Class_base* c)
 	c->setConstructor(Class<IFunction>::getFunction(_constructor));
 	c->setDeclaredMethodByQName("length","",Class<IFunction>::getFunction(_getLength),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("appendChild",AS3,Class<IFunction>::getFunction(appendChild),NORMAL_METHOD,true);
+	c->setDeclaredMethodByQName("children",AS3,Class<IFunction>::getFunction(_children),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("hasSimpleContent",AS3,Class<IFunction>::getFunction(_hasSimpleContent),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("hasComplexContent",AS3,Class<IFunction>::getFunction(_hasComplexContent),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(_toString),NORMAL_METHOD,true);
@@ -1348,6 +1349,19 @@ ASFUNCTIONBODY(XMLList,appendChild)
 	assert_and_throw(th->nodes.size()==1);
 	//Forward to the XML object
 	return XML::appendChild(th->nodes[0].getPtr(),args,argslen);
+}
+
+ASFUNCTIONBODY(XMLList,_children)
+{
+	XMLList* th=Class<XMLList>::cast(obj);
+	assert_and_throw(argslen==0);
+	XMLList* ret=Class<XMLList>::getInstanceS(true);
+	std::vector<_R<XML> >::iterator it=th->nodes.begin();
+	for(; it!=th->nodes.end(); ++it)
+	{
+		ret->append(_MR(static_cast<XMLList*>(XML::children((*it).getPtr(),args,argslen))));
+	}
+	return ret;
 }
 
 ASFUNCTIONBODY(XMLList,_hasSimpleContent)
