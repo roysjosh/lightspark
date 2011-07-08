@@ -1551,7 +1551,7 @@ ASFUNCTIONBODY(DisplayObject,_getLoaderInfo)
 {
 	DisplayObject* th=static_cast<DisplayObject*>(obj);
 	if(th->loaderInfo.isNull())
-		return new Undefined;
+		return SystemState::_getLoaderInfo(sys,NULL,0);
 
 	th->loaderInfo->incRef();
 	return th->loaderInfo.getPtr();
