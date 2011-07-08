@@ -198,6 +198,8 @@ class DisplayObjectContainer: public InteractiveObject
 private:
 	std::map<uint32_t,DisplayObject*> depthToLegacyChild;
 	bool _contains(_R<DisplayObject> child);
+	std::list<_R<DisplayObject>>::iterator _getChildIter(int index);
+	int _getChildIndex(_R<DisplayObject> d);
 	bool mouseChildren;
 protected:
 	void requestInvalidation();
@@ -232,6 +234,7 @@ public:
 	ASFUNCTION(removeChildAt);
 	ASFUNCTION(addChildAt);
 	ASFUNCTION(getChildIndex);
+	ASFUNCTION(setChildIndex);
 	ASFUNCTION(getChildAt);
 	ASFUNCTION(getChildByName);
 	ASFUNCTION(contains);

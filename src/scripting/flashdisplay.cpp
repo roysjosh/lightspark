@@ -1809,6 +1809,7 @@ void DisplayObjectContainer::sinit(Class_base* c)
 	c->setDeclaredMethodByQName("removeChild","",Class<IFunction>::getFunction(removeChild),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("removeChildAt","",Class<IFunction>::getFunction(removeChildAt),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("addChildAt","",Class<IFunction>::getFunction(addChildAt),NORMAL_METHOD,true);
+	c->setDeclaredMethodByQName("setChildIndex","",Class<IFunction>::getFunction(setChildIndex),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("contains","",Class<IFunction>::getFunction(contains),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("mouseChildren","",Class<IFunction>::getFunction(_setMouseChildren),SETTER_METHOD,true);
 	c->setDeclaredMethodByQName("mouseChildren","",Class<IFunction>::getFunction(_getMouseChildren),GETTER_METHOD,true);
@@ -2251,6 +2252,32 @@ ASFUNCTIONBODY(DisplayObjectContainer,getChildAt)
 	return (*it).getPtr();
 }
 
+list<_R<DisplayObject>>::iterator DisplayObjectContainer::_getChildIter(int index)
+{
+	list<_R<DisplayObject>>::iterator it=this->dynamicDisplayList.begin();
+	for(int i=0;i<index;i++)
+		++it;
+	return it;
+}
+
+int DisplayObjectContainer::_getChildIndex(_R<DisplayObject> d)
+{
+	list<_R<DisplayObject>>::const_iterator it=this->dynamicDisplayList.begin();
+	int ret=0;
+	do
+	{
+		if(it==this->dynamicDisplayList.end())
+			return -1;
+		if(*it==d)
+			break;
+
+		ret++;
+		++it;
+	}
+	while(1);
+	return ret;
+}
+
 //Only from VM context
 ASFUNCTIONBODY(DisplayObjectContainer,getChildIndex)
 {
@@ -2261,21 +2288,37 @@ ASFUNCTIONBODY(DisplayObjectContainer,getChildIndex)
 
 	//Cast to object
 	DisplayObject* d=static_cast<DisplayObject*>(args[0]);
-
-	list<_R<DisplayObject>>::const_iterator it=th->dynamicDisplayList.begin();
-	int ret=0;
-	do
-	{
-		if(*it==d)
-			break;
-		
-		ret++;
-		++it;
-		if(it==th->dynamicDisplayList.end())   
-			throw Class<ArgumentError>::getInstanceS("getChildIndex: child not in list");
-	}
-	while(1);
+	int ret=th->_getChildIndex(_MR(d));
+	if(ret<0)
+		throw Class<ArgumentError>::getInstanceS("getChildIndex: child not in list");
 	return abstract_i(ret);
+}
+
+//Only from VM context
+ASFUNCTIONBODY(DisplayObjectContainer,setChildIndex)
+{
+	DisplayObjectContainer* th=static_cast<DisplayObjectContainer*>(obj);
+	assert_and_throw(argslen==2);
+	if(args[0]->getObjectType() == T_CLASS)
+	{
+		return new Null;
+	}
+	//Validate object type
+	assert_and_throw(args[0]->getPrototype() &&
+		args[0]->getPrototype()->isSubClass(Class<DisplayObject>::getClass()));
+
+	int index=args[1]->toInt();
+
+	//Cast to object
+	_R<DisplayObject> d=_MR(Class<DisplayObject>::cast(args[0]));
+	assert_and_throw(index >= 0 && (size_t)index<=th->dynamicDisplayList.size());
+
+	list<_R<DisplayObject>>::iterator dest=th->_getChildIter(index);
+	list<_R<DisplayObject>>::iterator src=find(th->dynamicDisplayList.begin(), th->dynamicDisplayList.end(), d);
+	if(*dest!=*src)
+		th->dynamicDisplayList.splice(dest, th->dynamicDisplayList, src);
+
+	return NULL;
 }
 
 void Shape::finalize()
