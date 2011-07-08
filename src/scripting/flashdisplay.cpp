@@ -357,6 +357,7 @@ void Loader::execute()
 			localRoot=newRoot;
 		}
 		//complete event is dispatched when the LoaderInfo has sent init and bytesTotal==bytesLoaded
+		contentLoaderInfo->sendInit();
 	}
 	else if(source==BYTES)
 	{
